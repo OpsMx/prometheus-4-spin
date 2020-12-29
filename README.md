@@ -1,8 +1,6 @@
 ##Full instructions for installation and configuration of Prometheus for Spinnaker are here:
 https://www.opsmx.com/blog/spinnaker-monitoring-using-prometheus-and-alertmanager/
 
-https://docs.google.com/document/d/1l2ZQFLAae57o1xAplCYu5vmO2L4RTfVUwyyEp8FYZMs/edit#
-
 prom-server-cm.yaml: This contains configuration for Spinnaker-JOB to scape the metrics from spinnaker and alerts for spinnaker based on these metrics.
 
 alertmanager-cm.yaml: This contains sample alert-configuration for email and slack alerts
