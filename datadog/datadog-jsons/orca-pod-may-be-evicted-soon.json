@@ -1,0 +1,22 @@
+{
+	"name": "orca-pod-may-be-evicted-soon",
+	"type": "query alert",
+	"query": "avg(last_5m):avg:orca.jvm.gc.liveDataSize_value{*} by {host} / avg:orca.jvm.gc.maxDataSize_value{*} by {host} > 0.9",
+	"message": "orca JVM memory too high @ksrinimba@gmail.com",
+	"tags": [],
+	"options": {
+		"notify_audit": true,
+		"locked": false,
+		"timeout_h": 0,
+		"new_host_delay": 300,
+		"require_full_window": true,
+		"notify_no_data": false,
+		"renotify_interval": "0",
+		"escalation_message": "",
+		"no_data_timeframe": null,
+		"include_tags": true,
+		"thresholds": {
+			"critical": 0.9
+		}
+	}
+}

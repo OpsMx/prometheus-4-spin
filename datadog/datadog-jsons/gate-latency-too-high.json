@@ -1,0 +1,22 @@
+{
+	"name": "gate-latency-too-high",
+	"type": "query alert",
+	"query": "avg(last_5m):avg:gate.controller.invocations_count{statuscode:200} by {host,method} / avg:gate.controller.invocations_total{statuscode:200} by {host,method} > 100",
+	"message": "@ksrinimba@gmail.com",
+	"tags": [],
+	"options": {
+		"notify_audit": true,
+		"locked": false,
+		"timeout_h": 0,
+		"new_host_delay": 300,
+		"require_full_window": true,
+		"notify_no_data": false,
+		"renotify_interval": "0",
+		"escalation_message": "",
+		"no_data_timeframe": null,
+		"include_tags": true,
+		"thresholds": {
+			"critical": 100
+		}
+	}
+}

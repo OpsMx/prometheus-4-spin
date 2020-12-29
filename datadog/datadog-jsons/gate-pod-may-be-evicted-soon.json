@@ -1,0 +1,22 @@
+{
+	"name": "gate-pod-may-be-evicted-soon",
+	"type": "query alert",
+	"query": "avg(last_5m):avg:gate.jvm.memory.used_value{*} by {host,area} / avg:gate.jvm.memory.max_value{*} by {host,area} > 0.9",
+	"message": "gate JVM memory too high @ksrinimba@gmail.com",
+	"tags": [],
+	"options": {
+		"notify_audit": true,
+		"locked": false,
+		"timeout_h": 0,
+		"new_host_delay": 300,
+		"require_full_window": true,
+		"notify_no_data": false,
+		"renotify_interval": "0",
+		"escalation_message": "",
+		"no_data_timeframe": null,
+		"include_tags": true,
+		"thresholds": {
+			"critical": 0.9
+		}
+	}
+}

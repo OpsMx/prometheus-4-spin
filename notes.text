@@ -1,0 +1,6 @@
+Deleting data:
+To enabled it, pass --web.enable-admin-api flag 
+curl -X POST -g 'http://localhost:9090/api/v1/admin/tsdb/delete_series?match[]={__name__=~".+"}'
+curl -X POST -g 'http://localhost:9090/api/v1/admin/tsdb/clean_tombstones'
+curl -X POST -g 'http://localhost:9090/-/reload' -v
+

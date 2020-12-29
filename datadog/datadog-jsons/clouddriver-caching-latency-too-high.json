@@ -1,0 +1,22 @@
+{
+	"name": "clouddriver-caching-latency-too-high",
+	"type": "query alert",
+	"query": "avg(last_5m):avg:clouddriver_caching.controller.invocations_count{*} by {host,method} / avg:clouddriver_caching.controller.invocations_total{*} by {host,method} > 300",
+	"message": "@ksrinimba@gmail.com",
+	"tags": [],
+	"options": {
+		"notify_audit": true,
+		"locked": false,
+		"timeout_h": 0,
+		"new_host_delay": 300,
+		"require_full_window": true,
+		"notify_no_data": false,
+		"renotify_interval": "0",
+		"escalation_message": "",
+		"no_data_timeframe": null,
+		"include_tags": true,
+		"thresholds": {
+			"critical": 300
+		}
+	}
+}

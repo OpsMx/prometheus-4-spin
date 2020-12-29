@@ -1,0 +1,39 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-prom-server
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 8Gi
+  claimRef:
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    name: prometheus-1584018984-server
+    namespace: srini
+  persistentVolumeReclaimPolicy: Retain
+  #storageClassName: standard
+  hostPath:
+    path: "/home/vagrant/PVDIR/prom"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-prom-alert
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 8Gi
+  claimRef:
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    name: prometheus-1584018984-alertmanager
+    namespace: srini
+  persistentVolumeReclaimPolicy: Retain
+  #storageClassName: standard
+  hostPath:
+    path: "/home/vagrant/PVDIR/alert"
+---

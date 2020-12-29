@@ -1,0 +1,22 @@
+{
+	"name": "orca-queue-lag-high",
+	"type": "query alert",
+	"query": "change(avg(last_5m),last_5m):sum:orca.controller.invocations_total{*} by {host} / avg:orca.controller.invocations_count{*} by {host} > 0.5",
+	"message": "@ksrinimba@gmail.com",
+	"tags": [],
+	"options": {
+		"notify_audit": true,
+		"locked": false,
+		"timeout_h": 0,
+		"new_host_delay": 300,
+		"require_full_window": true,
+		"notify_no_data": false,
+		"renotify_interval": "0",
+		"escalation_message": "",
+		"no_data_timeframe": null,
+		"include_tags": true,
+		"thresholds": {
+			"critical": 0.5
+		}
+	}
+}
