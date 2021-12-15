@@ -1,0 +1,90 @@
+# https://github.com/camilb/prometheus-kubernetes/blob/master/manifests/prometheus/prometheus-k8s-rules.yaml
+groups:
+- name: pod_cpu_usage_is_high
+  rules:
+    - alert: CPUISHIGH
+      expr: sum(rate(container_cpu_usage_seconds_total{container_name!="POD",pod_name!=""}[5m])) by (pod_name)  > 0.1
+      for: 1m
+      labels:
+        severity: critical
+      annotations:
+        description: 'POD {{ $labels.pod }} cpu is high'
+        summary: 'pod cpu is high'
+
+- name: node_cpu_greater_than_80
+  rules:
+    - alert: NODECPUISHIGH
+      expr: (avg by(instance) (irate(node_cpu_seconds_total{mode != "idle"}[5m])) * 1000) > 80
+      for: 1m
+      labels:
+        severity: critical
+      annotations:
+        description: 'node {{ $labels.node }} cpu is high'
+        summary: 'node cpu is greater than 80 percent'
+- name: node_memory_left_lessser_than_10
+  rules:
+    - alert: NODEMEMORY
+      expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 10
+      for: 1m
+      labels:
+        severity: critical
+      annotations:
+        description: 'node {{ $labels.node }} memory left is low'
+        summary: 'node memory left is lesser than 10 percent'
+- name: node_disk_space_too_low
+  rules:
+    - alert: NODEDISK
+      expr: (100 * ((node_filesystem_avail_bytes{mountpoint="/",fstype!="rootfs"} )  / (node_filesystem_size_bytes{mountpoint="/",fstype!="rootfs",release="oes"}) ))  < 10
+      for: 1m
+      labels:
+        severity: critical
+      annotations:
+        description: node {{ $labels.node }} disk space is only {{ printf "%0.2f" $value }}% free.
+        summary: 'node disk space remaining is less than 10 percent'
+    - alert: NodeDiskRunningFull
+      annotations:
+        description: Device {{ $labels.device }} of node-exporter {{ $labels.namespace
+          }}/{{ $labels.pod }} will be full within the next 24 hours.
+        summary: 'node disk space could be full in next 24 hours'
+      expr: |
+        (node:node_filesystem_usage: > 0.85) and (predict_linear(node:node_filesystem_avail:[6h], 3600 * 24) < 0)
+      for: 30m
+      labels:
+        severity: warning
+- name: persistent_volume_space_low
+  rules:
+    - alert: PERSISTENTVOLUME
+      expr: (kubelet_volume_stats_available_bytes{namespace="oes"}/kubelet_volume_stats_capacity_bytes{namespace="oes"} *100) < 10
+      for: 1m
+      labels:
+        severity: critical
+      annotations:
+        description: The PersistentVolume claimed by {{ $labels.persistentvolumeclaim }} in Namespace {{ $labels.namespace }} is only {{ printf "%0.2f" $value }}% free.
+        summary: 'persistent volume disk space is less than 10 percent'
+    - alert: KubePersistentVolumeFullInFourDays
+      annotations:
+        description: Based on recent sampling, the PersistentVolume claimed by {{ $labels.persistentvolumeclaim
+          }} in Namespace {{ $labels.namespace }} is expected to fill up within four
+          days. Currently {{ printf "%0.2f" $value }}% is available.
+        summary: "Based on linear prediction, looks like a PV is going to be full"
+      expr: |
+        100 * (
+          kubelet_volume_stats_available_bytes{job="kubelet"}
+            /
+          kubelet_volume_stats_capacity_bytes{job="kubelet"}
+        ) < 15
+        and
+        predict_linear(kubelet_volume_stats_available_bytes{job="kubelet"}[6h], 4 * 24 * 3600) < 0
+      for: 5m
+      labels:
+        severity: warning
+#- name: pod killed or evicted
+#  rules:
+#    - alert: ContainerKilled
+#      expr: time() - container_last_seen > 60
+#      for: 5m
+#      labels:
+#        severity: warning
+#      annotations:
+#        description: "Container killed (instance {{ $labels.instance }})"
+#        summary: "Container killed (instance {{ $labels.instance }})"

@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    cert-manager.io/issue-temporary-certificate: "true"
+    cert-manager.io/issuer: letsencrypt-oes-spin
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+  name: prom-ui
+  namespace: oes
+spec:
+  rules:
+  - host: prom.saas.opsmx.com
+    http:
+      paths:
+      - backend:
+          serviceName: oes-prometheus-server
+          servicePort: 80
+        path: /
+        pathType: ImplementationSpecific
+  tls:
+  - hosts:
+    - prom.saas.opsmx.com
+    secretName: prom-ui-authtls

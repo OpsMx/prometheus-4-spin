@@ -1,0 +1,81 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    cert-manager.io/issue-temporary-certificate: "true"
+    cert-manager.io/issuer: letsencrypt-oes-spin
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"extensions/v1beta1","kind":"Ingress","metadata":{"annotations":{"acme.cert-manager.io/http01-edit-in-place":"true","cert-manager.io/issue-temporary-certificate":"true","cert-manager.io/issuer":"letsencrypt-oes-spin","kubernetes.io/ingress.class":"nginx","kubernetes.io/tls-acme":"true"},"name":"alerting-ui","namespace":"oes"},"spec":{"rules":[{"host":"alerting.saas.opsmx.com","http":{"paths":[{"backend":{"serviceName":"oes-prometheus-alertmanager","servicePort":80},"path":"/","pathType":"ImplementationSpecific"}]}}],"tls":[{"hosts":["alerting.saas.opsmx.com"],"secretName":"alerting-ui-authtls"}]}}
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/auth-url: https://$host/auth-proxy
+  creationTimestamp: "2021-06-24T09:57:36Z"
+  generation: 3
+  managedFields:
+  - apiVersion: extensions/v1beta1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:metadata:
+        f:annotations:
+          .: {}
+          f:acme.cert-manager.io/http01-edit-in-place: {}
+          f:cert-manager.io/issue-temporary-certificate: {}
+          f:cert-manager.io/issuer: {}
+          f:kubectl.kubernetes.io/last-applied-configuration: {}
+          f:kubernetes.io/ingress.class: {}
+          f:kubernetes.io/tls-acme: {}
+      f:spec:
+        f:tls: {}
+    manager: kubectl-client-side-apply
+    operation: Update
+    time: "2021-06-24T09:57:36Z"
+  - apiVersion: networking.k8s.io/v1beta1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:status:
+        f:loadBalancer:
+          f:ingress: {}
+    manager: nginx-ingress-controller
+    operation: Update
+    time: "2021-06-24T09:58:12Z"
+  - apiVersion: networking.k8s.io/v1beta1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:spec:
+        f:rules: {}
+    manager: controller
+    operation: Update
+    time: "2021-06-24T10:01:18Z"
+  - apiVersion: extensions/v1beta1
+    fieldsType: FieldsV1
+    fieldsV1:
+      f:metadata:
+        f:annotations:
+          f:nginx.ingress.kubernetes.io/auth-url: {}
+    manager: kubectl-edit
+    operation: Update
+    time: "2021-06-30T06:47:05Z"
+  name: alerting-ui
+  namespace: oes
+  resourceVersion: "24189061"
+  selfLink: /apis/extensions/v1beta1/namespaces/oes/ingresses/alerting-ui
+  uid: f80523b5-bd75-491e-aaca-304bd6ff3b37
+spec:
+  rules:
+  - host: alerting.saas.opsmx.com
+    http:
+      paths:
+      - backend:
+          serviceName: oes-prometheus-alertmanager
+          servicePort: 80
+        path: /
+        pathType: ImplementationSpecific
+  tls:
+  - hosts:
+    - alerting.saas.opsmx.com
+    secretName: alerting-ui-authtls
+status:
+  loadBalancer:
+    ingress:
+    - ip: 20.62.32.117

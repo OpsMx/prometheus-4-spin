@@ -1,0 +1,108 @@
+apiVersion: v1
+data:
+  alerting_rules.yml: "groups:\n- name: spinnaker-services-is-down\n  rules:\n  -
+    alert: spin-is-down\n    expr: absent(up{job=\"opsmx_spinnaker_metrics\"}) ==
+    1  \n    labels:\n      severity: critical\n    annotations:\n      description:
+    \"{{ $labels.service }} appears to be down for more 1 min {{ $value }})\"\n      summary:
+    One or more Spinnaker services are down \n- name: gate-latency-too-high\n  rules:\n
+    \ - alert: gate-invocations-increasing-too-fast\n    expr: sum (rate(gate:controller:invocations__percentile_total[2m]))
+    > 0.95\n    labels:\n      severity: warning\n    annotations:\n      description:
+    \"{{ $labels.instance }} invocation latency too high {{ $value }}) > 0.35\"\n
+    \     summary: gate-invocations-increasing-too-fast\n- name: clouddriver-latency-too-high\n
+    \ rules:\n  - alert: clouddriver-latency-too-high\n    expr: sum(rate(clouddriver:executionTime__totalTime_total[5m]))
+    by (instance) / sum(rate(clouddriver:executionTime__count_total[5m])) by (instance)
+    > 70000000000\n    labels:\n      severity: severe\n    annotations:\n      description:
+    \"{{ $labels.instance }} invocation latency too high {{ $value }}) > 700000000\"\n
+    \     summary: Cloud Driver responding too slowly\n"
+  alerts: |
+    {}
+  prometheus.yml: |
+    global:
+      evaluation_interval: 1m
+      scrape_interval: 5s
+      scrape_timeout: 2s
+    rule_files:
+    - /etc/config/recording_rules.yml
+    - /etc/config/alerting_rules.yml
+    - /etc/config/rules
+    - /etc/config/alerts
+    scrape_configs:
+    - job_name: opsmx_spinnaker_metrics
+      honor_labels: true
+      metrics_path: /prometheus_metrics
+      kubernetes_sd_configs:
+      - role: endpoints
+        namespaces:
+          names:
+            - spin-srini
+      relabel_configs:
+        - action: keep
+          source_labels:
+          - __meta_kubernetes_service_label_app
+          regex: spin
+        - action: keep
+          source_labels:
+          - __meta_kubernetes_pod_container_port_number
+          regex: "8008"
+        - source_labels:
+          - __meta_kubernetes_endpoint_address_target_kind
+          - __meta_kubernetes_endpoint_address_target_name
+          separator: ;
+          regex: Node;(.*)
+          replacement: ${1}
+          target_label: node
+        - source_labels:
+          - __meta_kubernetes_endpoint_address_target_kind
+          - __meta_kubernetes_endpoint_address_target_name
+          separator: ;
+          regex: Pod;(.*)
+          replacement: ${1}
+          target_label: pod
+        - source_labels:
+          - __meta_kubernetes_namespace
+          target_label: namespace
+        - source_labels:
+          - __meta_kubernetes_service_name
+          target_label: service
+        - source_labels:
+          - __meta_kubernetes_pod_name
+          target_label: pod
+        - target_label: endpoint
+          replacement: "8008"
+    alerting:
+      alertmanagers:
+      - kubernetes_sd_configs:
+          - role: pod
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        relabel_configs:
+        - source_labels: [__meta_kubernetes_namespace]
+          regex: srini
+          action: keep
+        - source_labels: [__meta_kubernetes_pod_label_app]
+          regex: prometheus
+          action: keep
+        - source_labels: [__meta_kubernetes_pod_label_component]
+          regex: alertmanager
+          action: keep
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_probe]
+          regex: .*
+          action: keep
+        - source_labels: [__meta_kubernetes_pod_container_port_number]
+          regex:
+          action: drop
+  recording_rules.yml: |
+    {}
+  rules: |
+    {}
+kind: ConfigMap
+metadata:
+  labels:
+    app: prometheus
+    chart: prometheus-10.4.0
+    component: server
+    heritage: Helm
+    release: prometheus-1584018984
+  name: prometheus-1584018984-server
+  namespace: srini

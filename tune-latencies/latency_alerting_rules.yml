@@ -1,0 +1,91 @@
+groups:
+- name: latency-too-high
+  rules:
+  - alert: clouddriver-ro-latency-too-high-getAccount
+    expr: sum(rate(clouddriver_ro:controller:invocations__total{service="spin-clouddriver-ro",statusCode="200", method = "getAccount"}[5m])) by (instance, method)/ sum(rate(clouddriver_ro:controller:invocations__count_total{service="spin-clouddriver-ro",statusCode="200", method = "getAccount"}[5m])) by (instance, method) > 1
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      description: "Service {{$labels.service}} is slow ({{$value}} per minute)"
+      summary: latency of clouddriver-ro is too high
+  - alert: clouddriver-ro-latency-too-high-others
+    expr: sum(rate(clouddriver_ro:controller:invocations__total{service="spin-clouddriver-ro",statusCode="200", method != "getAccount"}[5m])) by (instance, method)/ sum(rate(clouddriver_ro:controller:invocations__count_total{service="spin-clouddriver-ro",statusCode="200", method != "getAccount"}[5m])) by (instance, method) > 100
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      description: "Service {{$labels.service}} is slow ({{$value}} per minute)"
+      summary: latency of clouddriver-ro is too high
+  - alert: clouddriver-rw-latency-too-high
+    expr: sum(rate(clouddriver_rw:controller:invocations__total{service="spin-clouddriver-rw",statusCode="200"}[5m])) by (instance, method)/ sum(rate(clouddriver_rw:controller:invocations__count_total{service="spin-clouddriver-rw",statusCode="200"}[5m])) by (instance, method) *1000 > 500
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      description: "Service {{$labels.service}} is slow ({{$value}} per minute)"
+      summary: latency of clouddriver-rw is too high
+  - alert: clouddriver-caching-latency-too-high
+    expr: sum(rate(clouddriver_caching:controller:invocations__total{service="spin-clouddriver-caching",statusCode="200", method != "getMetrics"}[5m])) by (instance, method)/ sum(rate(clouddriver_caching:controller:invocations__count_total{service="spin-clouddriver-caching",statusCode="200", method != "getMetrics"}[5m])) by (instance, method) * 1000 > 50
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      description: "Service {{$labels.service}} is slow ({{$value}} per minute)"
+      summary: latency clouddriver-caching is too high
+  - alert: gate-latency-too-high-savePipeline
+    expr: sum(rate(gate:controller:invocations__total{service="spin-gate",statusCode="200", method =~ "savePipeline|getManifest|getConsoleOutput"}[5m])) by (instance, method)/ sum(rate(gate:controller:invocations__count_total{service="spin-gate",statusCode="200", method =~ "savePipeline|getManifest|getConsoleOutput"}[5m])) by (instance, method) * 1000 > 3000
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      description: "Service {{$labels.service}} is slow ({{$value}} per minute)"
+      summary: latency of gate is too high
+  - alert: gate-latency-too-high-others
+    expr: sum by(instance, method) (rate(gate:controller:invocations__total{method !~ "savePipeline|getManifest|getConsoleOutput",service="spin-gate",statusCode="200"}[5m])) / sum by(instance, method) (rate(gate:controller:invocations__count_total{method!="savePipeline|getManifest|getConsoleOutput",service="spin-gate",statusCode="200"}[5m])) * 1000 > 500
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      description: "Service {{$labels.service}} is slow ({{$value}} per minute)"
+      summary: latency of gate is too high
+  - alert: orca-latency-too-high
+    expr: sum(rate(orca:controller:invocations__total{service="spin-orca",statusCode="200"}[5m])) by (instance, method)/ sum(rate(orca:controller:invocations__count_total{service="spin-orca",statusCode="200"}[5m])) by (instance, method) * 1000 > 50
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      description: "Service {{$labels.service}} is slow ({{$value}} per minute)"
+      summary: latency of orca is too high
+  - alert: igor-latency-too-high
+    expr: sum(rate(igor:controller:invocations__total{service="spin-igor",statusCode="200"}[5m])) by (instance, method)/ sum(rate(igor:controller:invocations__count_total{service="spin-igor",statusCode="200"}[5m])) by (instance, method) * 1000 > 500
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      description: "Service {{$labels.service}} is slow ({{$value}} per minute)"
+      summary: latency of igor is too high
+  - alert: echo_scheduler-latency-too-high
+    expr: sum(rate(echo_scheduler:controller:invocations__total{service="spin-echo-scheduler",statusCode="200"}[5m])) by (instance, method)/ sum(rate(echo_scheduler:controller:invocations__count_total{service="spin-echo-scheduler",statusCode="200"}[5m])) by (instance, method) * 1000 > 5
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      description: "Service {{$labels.service}} is slow ({{$value}} per minute)"
+      summary: latency of echo-scheduler is too high
+  - alert: echo_worker-latency-too-high
+    expr: sum(rate(echo_worker:controller:invocations__total{service="spin-echo-worker",statusCode="200"}[5m])) by (instance, method)/ sum(rate(echo_worker:controller:invocations__count_total{service="spin-echo-worker",statusCode="200"}[5m])) by (instance, method) * 1000  > 5
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      description: "Service {{$labels.service}} is slow ({{$value}} per minute)"
+      summary: latency of echo-worker is too high
+  - alert: front50-latency-too-high
+    expr: sum(rate(front50:controller:invocations__total{service="spin-front50",statusCode="200"}[5m])) by (instance, method)/ sum(rate(front50:controller:invocations__count_total{service="spin-front50",statusCode="200"}[5m])) by (instance, method) * 1000 > 500
+    for: 15m
+    labels:
+      severity: warning
+    annotations:
+      description: "Service {{$labels.service}} is slow ({{$value}} per minute)"
+      summary: latency of front50 is too high

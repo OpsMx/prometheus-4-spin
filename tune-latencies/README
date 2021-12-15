@@ -1,0 +1,18 @@
+k create cm oes-prometheus-alertmanager -n oes --from-file alertmanager.yml --dry-run=client -o yaml > updated-alertmanager.yml
+k create cm spinnaker-alerts -n oes --from-file  spin_alerting_rules.yml --from-file node_alerting_rules.yml --dry-run=client -o yaml > updated-alert-rules.yml
+
+
+
+25-Jun-2021:
+Decided to break all the latency rules into another file as these need more fine tuning
+
+Now we have these files:
+a) node_alerting_rules - The are generics that we need to monitor, not related to Spinnaker
+b) latency_alerting_rules - These include all the others
+c) Spin_alerting_rules - These include all the others
+
+Procedure:
+a) Update the rules as required
+b) Create a config-yaml and update as follows
+k create cm spinnaker-alerts -n oes --from-file  spin_alerting_rules.yml --from-file node_alerting_rules.yml --from-file latency_alerting_rules.yml --dry-run=client -o yaml > updated-alert-rules.yml
+k apply -f updated-alert-rules.yml
